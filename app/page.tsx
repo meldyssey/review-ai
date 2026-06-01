@@ -8,6 +8,7 @@ import TagSelector from '@/components/TagSelector'
 import ReviewResult from '@/components/ReviewResult'
 import ReviewHistory from '@/components/ReviewHistory'
 import { Button } from '@/components/ui/button'
+import { Loader2 } from 'lucide-react'
 import type { Platform, ReviewHistoryItem } from '@/types'
 import { PLATFORMS } from '@/types'
 import { getReviewHistory, saveReviewToHistory } from '@/lib/review-history'
@@ -82,7 +83,12 @@ export default function Home() {
           disabled={isLoading || !productName.trim()}
           className="w-full"
         >
-          {isLoading ? '리뷰 생성 중...' : '리뷰 생성하기'}
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              리뷰 생성 중...
+            </>
+          ) : '리뷰 생성하기'}
         </Button>
       </form>
 

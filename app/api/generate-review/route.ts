@@ -6,7 +6,7 @@ import type { GenerateReviewRequest, GenerateReviewResponse } from '@/types'
 const FALLBACK_MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite']
 
 function isFallbackError(err: unknown): boolean {
-  const message = err instanceof Error ? err.message : String(err)
+  const message = (err instanceof Error ? err.message : String(err)) ?? ''
   return (
     message.includes('429') ||
     message.includes('503') ||
@@ -46,7 +46,7 @@ async function generateWithFallback(body: GenerateReviewRequest): Promise<string
     }
   }
 
-  throw lastError
+  throw lastError ?? new Error('모든 AI 모델에서 리뷰 생성에 실패했습니다')
 }
 
 export async function POST(req: NextRequest) {

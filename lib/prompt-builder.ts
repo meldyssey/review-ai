@@ -31,7 +31,7 @@ function buildCoupangSystemPrompt(): string {
 - 실제 사용 경험처럼 구체적인 수치나 비교 표현 활용 (예: "신라면보다 약간 아랫단계", "1조각당 물 200ml")
 - 가격, 중량, 배송 관련 내용은 사용자가 작성한 경우에만 표기
 - 자연스러운 구어체 사용
-- 700~800자 이내로 작성`
+- 700자 이상 1000자 이내로 작성`
 }
 
 export function buildSystemPrompt(platform: string): string {

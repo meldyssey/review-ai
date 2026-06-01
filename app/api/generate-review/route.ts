@@ -14,21 +14,19 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const completion = await openai.chat.completions.create({
+    const completion = await openai.responses.create({
       model: 'gpt-5-nano-2025-08-07',
-      messages: [
-        { role: 'system', content: buildSystemPrompt(body.platform) },
-        { role: 'user', content: buildUserPrompt(body) },
-      ],
-      max_completion_tokens: 4000,
+      instructions: buildSystemPrompt(body.platform),
+      input: buildUserPrompt(body),
+      max_output_tokens: 20000,
+      tools: [{ type: 'web_search_preview' }],
     })
 
-    const content = completion.choices[0]?.message?.content
-    if (!content) {
-      console.error('Empty content from OpenAI:', JSON.stringify(completion.choices[0]))
+    const review = completion.output_text?.trim()
+    if (!review) {
+      console.error('Empty content from OpenAI:', JSON.stringify(completion.output))
       return NextResponse.json({ error: '리뷰를 생성할 수 없습니다' }, { status: 500 })
     }
-    const review = content.trim()
 
     const response: GenerateReviewResponse = { review }
     return NextResponse.json(response)

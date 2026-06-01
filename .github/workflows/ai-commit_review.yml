@@ -31,4 +31,4 @@ jobs:
       - name: Run AI review
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: node .github/scripts/ai_review.js
+        run: node .github/scripts/ai_commit_review.js

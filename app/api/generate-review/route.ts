@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import openai from '@/lib/openai'
+import ai from '@/lib/gemini'
 import { buildSystemPrompt, buildUserPrompt } from '@/lib/prompt-builder'
 import type { GenerateReviewRequest, GenerateReviewResponse } from '@/types'
 
@@ -14,17 +14,19 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const completion = await openai.responses.create({
-      model: 'gpt-5-nano-2025-08-07',
-      instructions: buildSystemPrompt(body.platform),
-      input: buildUserPrompt(body),
-      max_output_tokens: 20000,
-      tools: [{ type: 'web_search_preview' }],
+    const result = await ai.models.generateContent({
+      model: 'gemini-2.5-flash-lite',
+      contents: buildUserPrompt(body),
+      config: {
+        systemInstruction: buildSystemPrompt(body.platform),
+        tools: [{ googleSearch: {} }],
+        maxOutputTokens: 8192,
+      },
     })
 
-    const review = completion.output_text?.trim()
+    const review = result.text?.trim()
     if (!review) {
-      console.error('Empty content from OpenAI:', JSON.stringify(completion.output))
+      console.error('Empty content from Gemini:', JSON.stringify(result))
       return NextResponse.json({ error: '리뷰를 생성할 수 없습니다' }, { status: 500 })
     }
 

@@ -14,11 +14,19 @@ export default function ReviewResult({ review }: Props) {
   const [copied, setCopied] = useState(false);
   const [curReview, setCurReview] = useState(review);
 
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(curReview);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      timerRef.current = setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error("복사에 실패했습니다. 잠시 후 다시 시도해 주세요.");
     }
@@ -65,6 +73,7 @@ export default function ReviewResult({ review }: Props) {
           value={curReview}
           onChange={(e) => setCurReview(e.target.value)}
           className="text-sm leading-relaxed resize-none overflow-hidden"
+          aria-label="생성된 리뷰 내용"
         />
         <p className="text-xs text-muted-foreground text-right mt-1">
           {[...curReview].length}자

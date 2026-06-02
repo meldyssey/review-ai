@@ -1,36 +1,41 @@
-'use client'
+"use client";
 
-import { useState, useRef, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
+import { useState, useRef, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 interface Props {
-  review: string
+  review: string;
 }
 
 export default function ReviewResult({ review }: Props) {
-  const [copied, setCopied] = useState(false)
-  const [curReview, setCurReview] = useState(review)
+  const [copied, setCopied] = useState(false);
+  const [curReview, setCurReview] = useState(review);
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(curReview)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+    try {
+      await navigator.clipboard.writeText(curReview);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("복사에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    }
+  };
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleReset = () => setCurReview(review)
+  const handleReset = () => setCurReview(review);
 
-  const isModified = curReview !== review
+  const isModified = curReview !== review;
 
   useEffect(() => {
-    const el = textareaRef.current
-    if (!el) return
-    el.style.height = 'auto'
-    el.style.height = `${el.scrollHeight}px`
-  }, [curReview])
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [curReview]);
 
   return (
     <Card>
@@ -49,7 +54,7 @@ export default function ReviewResult({ review }: Props) {
               </Button>
             )}
             <Button size="sm" onClick={handleCopy}>
-              {copied ? '복사됨 ✓' : '복사'}
+              {copied ? "복사됨 ✓" : "복사"}
             </Button>
           </div>
         </div>
@@ -62,9 +67,9 @@ export default function ReviewResult({ review }: Props) {
           className="text-sm leading-relaxed resize-none overflow-hidden"
         />
         <p className="text-xs text-muted-foreground text-right mt-1">
-          {curReview.length}자
+          {[...curReview].length}자
         </p>
       </CardContent>
     </Card>
-  )
+  );
 }

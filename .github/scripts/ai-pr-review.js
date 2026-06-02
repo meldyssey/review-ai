@@ -73,6 +73,10 @@ If overall looks good, a short compliment is fine. Keep feedback concise and act
     });
 
     const review = response.output_text;
+    if (!review?.trim()) {
+      console.log("리뷰 내용 없음, 코멘트 스킵");
+      return;
+    }
     await postComment(`## AI 코드 리뷰\n\n${review}\n\n---\n*Powered by OpenAI ${model}*`);
     console.log("리뷰 코멘트 등록 완료");
   }

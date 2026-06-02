@@ -1,60 +1,73 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import PlatformSelector from '@/components/PlatformSelector'
-import ProductForm from '@/components/ProductForm'
-import ReviewInput from '@/components/ReviewInput'
-import TagSelector from '@/components/TagSelector'
-import ReviewResult from '@/components/ReviewResult'
-import ReviewHistory from '@/components/ReviewHistory'
-import { Button } from '@/components/ui/button'
-import { Loader2 } from 'lucide-react'
-import type { Platform, ReviewHistoryItem } from '@/types'
-import { PLATFORMS } from '@/types'
-import { getReviewHistory, saveReviewToHistory } from '@/lib/review-history'
+import { useState, useEffect } from "react";
+import PlatformSelector from "@/components/PlatformSelector";
+import ProductForm from "@/components/ProductForm";
+import ReviewInput from "@/components/ReviewInput";
+import TagSelector from "@/components/TagSelector";
+import ReviewResult from "@/components/ReviewResult";
+import ReviewHistory from "@/components/ReviewHistory";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import type { Platform, ReviewHistoryItem } from "@/types";
+import { PLATFORMS } from "@/types";
+import { getReviewHistory, saveReviewToHistory } from "@/lib/review-history";
 
 export default function Home() {
-  const [platform, setPlatform] = useState<Platform>('쿠팡')
-  const [productName, setProductName] = useState('')
-  const [category, setCategory] = useState('')
-  const [pros, setPros] = useState('')
-  const [cons, setCons] = useState('')
-  const [tags, setTags] = useState<string[]>([])
-  const [generatedReview, setGeneratedReview] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [history, setHistory] = useState<ReviewHistoryItem[]>([])
+  const [platform, setPlatform] = useState<Platform>("쿠팡");
+  const [productName, setProductName] = useState("");
+  const [category, setCategory] = useState("");
+  const [pros, setPros] = useState("");
+  const [cons, setCons] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
+  const [generatedReview, setGeneratedReview] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [history, setHistory] = useState<ReviewHistoryItem[]>([]);
+  const [reviewKey, setReviewKey] = useState(0);
 
   useEffect(() => {
-    setHistory(getReviewHistory())
-  }, [])
+    setHistory(getReviewHistory());
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!productName.trim() || (!pros.trim() && !cons.trim())) return
+    e.preventDefault();
+    if (!productName.trim() || (!pros.trim() && !cons.trim())) return;
 
-    setIsLoading(true)
-    setGeneratedReview('')
+    setIsLoading(true);
+    setGeneratedReview("");
 
     try {
-      const res = await fetch('/api/generate-review', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ platform, productName, category, pros, cons, tags }),
-      })
+      const res = await fetch("/api/generate-review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          platform,
+          productName,
+          category,
+          pros,
+          cons,
+          tags,
+        }),
+      });
 
-      if (!res.ok) throw new Error('리뷰 생성에 실패했습니다')
+      if (!res.ok) throw new Error("리뷰 생성에 실패했습니다");
 
-      const data = await res.json()
-      setGeneratedReview(data.review)
+      const data = await res.json();
+      setGeneratedReview(data.review);
+      setReviewKey((prev) => prev + 1);
 
-      const updated = saveReviewToHistory({ platform, productName, review: data.review })
-      setHistory(updated)
+      const updated = saveReviewToHistory({
+        platform,
+        productName,
+        review: data.review,
+      });
+      setHistory(updated);
     } catch (err) {
-      alert(err instanceof Error ? err.message : '오류가 발생했습니다')
+      alert(err instanceof Error ? err.message : "오류가 발생했습니다");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <main className="max-w-2xl mx-auto p-6">
@@ -88,13 +101,15 @@ export default function Home() {
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               리뷰 생성 중...
             </>
-          ) : '리뷰 생성하기'}
+          ) : (
+            "리뷰 생성하기"
+          )}
         </Button>
       </form>
 
       {generatedReview && (
         <div className="mt-6">
-          <ReviewResult review={generatedReview} />
+          <ReviewResult key={reviewKey} review={generatedReview} />
         </div>
       )}
 
@@ -104,5 +119,5 @@ export default function Home() {
         </div>
       )}
     </main>
-  )
+  );
 }

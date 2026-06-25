@@ -53,6 +53,7 @@ export default function Home() {
     if (!productName.trim() || (!pros.trim() && !cons.trim())) return;
 
     setIsLoading(true);
+    setSelectedHistoryId(undefined);
 
     try {
       const res = await fetch("/api/generate-review", {
@@ -81,6 +82,7 @@ export default function Home() {
   return (
     <main className="max-w-2xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">AI 리뷰 작성기</h1>
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <PlatformSelector platforms={PLATFORMS} selected={platform} onChange={setPlatform} />
         <ProductForm
@@ -103,7 +105,7 @@ export default function Home() {
         </Button>
       </form>
 
-      {selectedItem && (
+      {!isLoading && selectedItem && (
         <div ref={reviewResultRef} className="mt-6">
           <ReviewResult item={selectedItem} onSave={handleSaveReview} />
         </div>

@@ -20,6 +20,10 @@ export interface ReviewHistoryItem {
   createdAt: string
   platform: Platform
   productName: string
+  category: string
+  pros: string
+  cons: string
+  tags: string[]
   review: string
 }
 

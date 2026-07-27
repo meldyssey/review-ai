@@ -53,7 +53,7 @@ ${diff}
 \`\`\`
 ${truncated ? "\n> ⚠️  diff가 너무 커서 앞부분만 리뷰되었습니다." : ""}`;
 
-  const model = "gpt-5.1-codex-mini";
+  const model = "gpt-5.4-mini";
   const context = [{ role: "user", content: prompt }];
 
   const response = await client.responses.create({
